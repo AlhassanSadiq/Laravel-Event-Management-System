@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Event - Admin</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; background: #f4f6f8; margin: 0; padding: 0; }
+        .sidebar { width: 250px; background: #1A1E5A; color: white; position: fixed; height: 100vh; padding: 20px 0;}
+        .sidebar h2 { text-align: center; margin-bottom: 30px; }
+        .sidebar a { display: block; color: white; text-decoration: none; padding: 15px 25px; transition: background 0.3s; }
+        .sidebar a:hover { background: #3B2A8F; }
+        .main-content { margin-left: 250px; padding: 40px; }
+        
+        .card { background: white; padding: 30px; border-radius: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); max-width: 600px; }
+        .form-group { margin-bottom: 20px; }
+        .form-group label { display: block; margin-bottom: 8px; font-weight: 600; }
+        .form-group input { width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 8px; box-sizing: border-box; }
+        
+        .btn { padding: 12px 24px; background: #6C4BFF; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; }
+        .alert { padding: 15px; background: #e8f5e9; color: #2e7d32; border-radius: 8px; margin-bottom: 20px; }
+    </style>
+</head>
+<body>
+    <div class="sidebar">
+        <h2>AWE Academy</h2>
+        <a href="{{ route('admin.dashboard') }}">Dashboard</a>
+        <a href="{{ route('admin.verify') }}">Verify Tickets</a>
+        <a href="{{ route('admin.event.edit') }}">Event Settings</a>
+        <a href="{{ route('admin.coupons.index') }}">Coupons</a>
+        <a href="/">View Site</a>
+        <a href="{{ route('admin.logout') }}">Logout</a>
+    </div>
+
+    <div class="main-content">
+        <h1>Edit Event Settings</h1>
+
+        @if(session('success'))
+            <div class="alert">{{ session('success') }}</div>
+        @endif
+
+        <div class="card">
+            <form action="{{ route('admin.event.update') }}" method="POST">
+                @csrf
+                <div class="form-group">
+                    <label>Event Name</label>
+                    <input type="text" name="name" value="{{ $event->name }}" required>
+                </div>
+                <div class="form-group">
+                    <label>Regular Price (₦)</label>
+                    <input type="number" name="price" value="{{ $event->price }}" required>
+                </div>
+                <div class="form-group">
+                    <label>Discount Price (₦) - Leave empty if no discount</label>
+                    <input type="number" name="discount_price" value="{{ $event->discount_price }}">
+                </div>
+                <div class="form-group">
+                    <label>Event Date</label>
+                    <input type="date" name="date" value="{{ $event->date }}" required>
+                </div>
+                <div class="form-group">
+                    <label>Location / Address</label>
+                    <input type="text" name="location" value="{{ $event->location }}" required>
+                </div>
+                <button type="submit" class="btn">Update Event Details</button>
+            </form>
+        </div>
+    </div>
+</body>
+</html>
