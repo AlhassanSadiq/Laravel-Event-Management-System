@@ -22,6 +22,8 @@
             position: fixed;
             height: 100vh;
             padding: 20px 0;
+            transition: 0.3s;
+            z-index: 1000;
         }
 
         .sidebar h2 {
@@ -44,6 +46,23 @@
         .main-content {
             margin-left: 250px;
             padding: 40px;
+            transition: 0.3s;
+        }
+
+        /* Mobile Menu Toggle */
+        .mobile-toggle {
+            display: none;
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #1A1E5A;
+            color: white;
+            padding: 10px 15px;
+            border-radius: 5px;
+            z-index: 1100;
+            cursor: pointer;
+            font-weight: bold;
+            border: none;
         }
 
         h1 {
@@ -85,6 +104,13 @@
             justify-content: space-between;
             align-items: center;
             margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .search-form {
+            display: flex;
+            gap: 10px;
         }
 
         .search-form input {
@@ -103,14 +129,18 @@
             cursor: pointer;
         }
 
-        table {
+        .table-responsive {
             width: 100%;
-            border-collapse: collapse;
+            overflow-x: auto;
             background: white;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
             border-radius: 10px;
-            overflow: hidden;
             margin-bottom: 40px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
         }
 
         th,
@@ -123,6 +153,7 @@
         th {
             background: #f9f9f9;
             color: #555;
+            white-space: nowrap;
         }
 
         .status {
@@ -146,10 +177,38 @@
             background: #e8f5e9;
             color: #2e7d32;
         }
+
+        @media (max-width: 992px) {
+            .sidebar {
+                left: -250px;
+            }
+            .sidebar.active {
+                left: 0;
+            }
+            .main-content {
+                margin-left: 0;
+                padding: 60px 20px 20px;
+            }
+            .mobile-toggle {
+                display: block;
+            }
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+            .search-form input {
+                width: 100%;
+            }
+            .top-actions {
+                flex-direction: column;
+                align-items: stretch;
+            }
+        }
     </style>
 </head>
 
 <body>
+
+    <button class="mobile-toggle" onclick="document.querySelector('.sidebar').classList.toggle('active')">☰ MENU</button>
 
     <div class="sidebar">
         <h2>AWE Academy</h2>
@@ -164,7 +223,7 @@
     </div>
 
     <div class="main-content">
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 15px;">
             <h1 style="margin: 0;">Dashboard</h1>
             <a href="{{ route('admin.manual.register') }}" style="background: #E53935; color: white; padding: 12px 20px; text-decoration: none; border-radius: 8px; font-weight: bold;">+ ISSUE MANUAL TICKET</a>
         </div>
@@ -200,34 +259,36 @@
             </form>
         </div>
 
-        <table>
-            <thead>
-                <tr>
-                    <th>Ticket Code</th>
-                    <th>Name</th>
-                    <th>Email</th>
-                    <th>Ref</th>
-                    <th>Status</th>
-                    <th>Created</th>
-                    <th>Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach($tickets as $ticket)
-                <tr>
-                    <td><strong><a href="{{ route('ticket.show', $ticket->ticket_code) }}" target="_blank">{{ $ticket->ticket_code }}</a></strong></td>
-                    <td>{{ $ticket->name }}</td>
-                    <td>{{ $ticket->email }}</td>
-                    <td>{{ $ticket->payment_reference }}</td>
-                    <td><span class="status {{ strtolower($ticket->status) }}">{{ strtoupper($ticket->status) }}</span></td>
-                    <td>{{ $ticket->created_at->format('M d, Y H:i') }}</td>
-                    <td>
-                        <a href="{{ route('ticket.show', $ticket->ticket_code) }}" target="_blank" style="color: #6C4BFF; font-weight: bold; text-decoration: none;">Download</a>
-                    </td>
-                </tr>
-                @endforeach
-            </tbody>
-        </table>
+        <div class="table-responsive">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Ticket Code</th>
+                        <th>Name</th>
+                        <th>Email</th>
+                        <th>Ref</th>
+                        <th>Status</th>
+                        <th>Created</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach($tickets as $ticket)
+                    <tr>
+                        <td><strong><a href="{{ route('ticket.show', $ticket->ticket_code) }}" target="_blank">{{ $ticket->ticket_code }}</a></strong></td>
+                        <td>{{ $ticket->name }}</td>
+                        <td>{{ $ticket->email }}</td>
+                        <td>{{ $ticket->payment_reference }}</td>
+                        <td><span class="status {{ strtolower($ticket->status) }}">{{ strtoupper($ticket->status) }}</span></td>
+                        <td>{{ $ticket->created_at->format('M d, Y H:i') }}</td>
+                        <td>
+                            <a href="{{ route('ticket.show', $ticket->ticket_code) }}" target="_blank" style="color: #6C4BFF; font-weight: bold; text-decoration: none;">Download</a>
+                        </td>
+                    </tr>
+                    @endforeach
+                </tbody>
+            </table>
+        </div>
 
         <!-- We would also paginate and list payments, excluded for brevity but can be added in a tab -->
 

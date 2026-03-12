@@ -15,25 +15,42 @@
             padding: 0;
         }
 
-        .navbar {
-            background: #1A1E5A;
-            color: white;
-            padding: 15px 20px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
+        .sidebar { 
+            width: 250px; 
+            background: #1A1E5A; 
+            color: white; 
+            position: fixed; 
+            height: 100vh; 
+            padding: 20px 0;
+            transition: 0.3s;
+            z-index: 1000;
         }
 
-        .navbar a {
+        .sidebar.active { left: 0; }
+        .sidebar h2 { text-align: center; margin-bottom: 30px; }
+        .sidebar a { display: block; color: white; text-decoration: none; padding: 15px 25px; transition: background 0.3s; }
+        .sidebar a:hover { background: #3B2A8F; }
+
+        .main-content { margin-left: 250px; padding: 40px; transition: 0.3s; }
+
+        .mobile-toggle {
+            display: none;
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #1A1E5A;
             color: white;
-            text-decoration: none;
+            padding: 10px 15px;
+            border-radius: 5px;
+            z-index: 1100;
+            cursor: pointer;
             font-weight: bold;
+            border: none;
         }
 
         .container {
             max-width: 600px;
-            margin: 40px auto;
-            padding: 20px;
+            margin: 0 auto;
             text-align: center;
         }
 
@@ -102,17 +119,34 @@
             background: #E53935;
             margin-bottom: 20px;
         }
+
+        @media (max-width: 992px) {
+            .sidebar { left: -250px; }
+            .sidebar.active { left: 0; }
+            .main-content { margin-left: 0; padding: 60px 20px 20px; }
+            .mobile-toggle { display: block; }
+        }
     </style>
 </head>
 
 <body>
 
-    <div class="navbar">
-        <a href="{{ route('admin.dashboard') }}">← Back to Dashboard</a>
-        <span>Ticket Verification</span>
+    <button class="mobile-toggle" onclick="document.querySelector('.sidebar').classList.toggle('active')">☰ MENU</button>
+
+    <div class="sidebar">
+        <h2>AWE Academy</h2>
+        <a href="{{ route('admin.dashboard') }}">Dashboard</a>
+        <a href="{{ route('admin.verify') }}" style="background: #3B2A8F;">Verify Tickets</a>
+        <a href="{{ route('admin.manual.register') }}">Manual Registration</a>
+        <a href="{{ route('admin.event.edit') }}">Event Settings</a>
+        <a href="{{ route('admin.coupons.index') }}">Coupons</a>
+        <a href="{{ route('admin.email.test') }}">Test Email</a>
+        <a href="/">View Site</a>
+        <a href="{{ route('admin.logout') }}">Logout</a>
     </div>
 
-    <div class="container">
+    <div class="main-content">
+        <div class="container">
 
         @if(session('error'))
         <div class="alert alert-error">{{ session('error') }}</div>

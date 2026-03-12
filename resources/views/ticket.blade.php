@@ -124,10 +124,15 @@
             btn.style.display = 'none';
             printBtn.style.display = 'none';
             
-            html2canvas(ticket).then(canvas => {
+            html2canvas(ticket, {
+                scale: 2,
+                useCORS: true,
+                allowTaint: true,
+                backgroundColor: "#f4f6f8"
+            }).then(canvas => {
                 const link = document.createElement('a');
                 link.download = 'ticket-{{ $ticket->ticket_code }}.png';
-                link.href = canvas.toDataURL();
+                link.href = canvas.toDataURL('image/png');
                 link.click();
                 
                 // Show buttons again
