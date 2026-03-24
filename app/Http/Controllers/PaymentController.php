@@ -31,7 +31,8 @@ class PaymentController extends Controller
 
         // Apply Coupon if provided
         if ($request->coupon_code) {
-            $coupon = Coupon::where('code', $request->coupon_code)->first();
+            $couponCode = strtoupper(trim($request->coupon_code));
+            $coupon = Coupon::where('code', $couponCode)->first();
             if ($coupon && $coupon->isValid()) {
                 if ($coupon->type === 'percentage') {
                     $discount = ($coupon->discount_amount / 100) * $totalAmount;
@@ -43,11 +44,48 @@ class PaymentController extends Controller
             }
         }
 
+        $reference = 'AWE-' . Str::upper(Str::random(10));
+
+        // If amount is 0 (e.g., 100% discount), bypass Paystack and issue ticket directly
+        if ($totalAmount <= 0) {
+            Payment::create([
+                'reference' => $reference,
+                'email' => $request->email,
+                'amount' => 0,
+                'status' => 'success',
+            ]);
+
+            $tickets = [];
+            for ($i = 0; $i < $request->quantity; $i++) {
+                $ticketCode = 'TICKET-' . Str::upper(Str::random(8));
+                $ticket = Ticket::create([
+                    'event_id' => $event->id,
+                    'name' => $request->name,
+                    'email' => $request->email,
+                    'phone' => $request->phone,
+                    'ticket_code' => $ticketCode,
+                    'qr_code' => '',
+                    'payment_reference' => $reference,
+                    'status' => 'valid',
+                ]);
+
+                $qrcode = (new \chillerlan\QRCode\QRCode)->render($ticketCode);
+                $ticket->update(['qr_code' => $qrcode]);
+                $tickets[] = $ticket;
+
+                try {
+                    \Illuminate\Support\Facades\Mail::to($ticket->email)->send(new \App\Mail\TicketPurchased($ticket));
+                } catch (\Exception $e) {
+                    \Illuminate\Support\Facades\Log::error('Mail sending failed: ' . $e->getMessage());
+                }
+            }
+
+            return redirect()->route('ticket.show', ['code' => $tickets[0]->ticket_code])->with('success', 'Tickets claimed successfully with 100% discount!');
+        }
+
         // Paystack API call
         $url = "https://api.paystack.co/transaction/initialize";
         $secretKey = env('PAYSTACK_SECRET_KEY', 'sk_test_dummy_key');
-
-        $reference = 'AWE-' . Str::upper(Str::random(10));
 
         $data = [
             'email' => $request->email,

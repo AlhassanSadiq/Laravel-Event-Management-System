@@ -85,6 +85,16 @@
             <div class="alert">{{ session('success') }}</div>
         @endif
 
+        @if($errors->any())
+            <div class="alert" style="background: #ffebee; color: #c62828;">
+                <ul style="margin: 0; padding-left: 20px;">
+                    @foreach($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+            </div>
+        @endif
+
         <div class="card">
             <h3>Add New Coupon</h3>
             <form action="{{ route('admin.coupons.store') }}" method="POST" class="form-inline">
