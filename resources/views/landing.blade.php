@@ -290,6 +290,17 @@
             </div>
 
             <div class="purchase-card">
+                @if(session('error'))
+                    <div style="background: #ffebee; color: #c62828; padding: 15px; border-radius: 8px; margin-bottom: 20px; text-align: center; font-weight: bold;">
+                        {{ session('error') }}
+                    </div>
+                @endif
+                @if(session('message') || session('success'))
+                    <div style="background: #e8f5e9; color: #2e7d32; padding: 15px; border-radius: 8px; margin-bottom: 20px; text-align: center; font-weight: bold;">
+                        {{ session('message') ?? session('success') }}
+                    </div>
+                @endif
+
                 <form action="{{ route('checkout') }}" method="POST">
                     @csrf
                     <input type="hidden" name="event_id" value="{{ $event->id }}">

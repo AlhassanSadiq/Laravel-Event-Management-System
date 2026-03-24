@@ -33,6 +33,7 @@ class PaymentController extends Controller
         if ($request->coupon_code) {
             $couponCode = strtoupper(trim($request->coupon_code));
             $coupon = Coupon::where('code', $couponCode)->first();
+            
             if ($coupon && $coupon->isValid()) {
                 if ($coupon->type === 'percentage') {
                     $discount = ($coupon->discount_amount / 100) * $totalAmount;
@@ -41,6 +42,8 @@ class PaymentController extends Controller
                     $totalAmount -= $coupon->discount_amount;
                 }
                 if ($totalAmount < 0) $totalAmount = 0;
+            } else {
+                return back()->with('error', 'Invalid or expired coupon code.');
             }
         }
 
