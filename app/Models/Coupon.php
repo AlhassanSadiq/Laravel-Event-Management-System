@@ -18,8 +18,6 @@ class Coupon extends Model
 
     public function isValid()
     {
-        if (!$this->is_active) return false;
-        
         if ($this->expires_at) {
             // Allow the coupon to be valid until the VERY END of the selected expiry date
             if ($this->expires_at->endOfDay() < now()) {

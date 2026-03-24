@@ -115,7 +115,8 @@ class AdminController extends Controller
     public function couponStore(Request $request)
     {
         $request->merge([
-            'code' => strtoupper(trim($request->code))
+            'code' => strtoupper(trim($request->code)),
+            'is_active' => true
         ]);
 
         $request->validate([
