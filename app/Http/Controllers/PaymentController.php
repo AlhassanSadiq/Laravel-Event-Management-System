@@ -31,8 +31,12 @@ class PaymentController extends Controller
 
         // Apply Coupon if provided
         if ($request->coupon_code) {
-            $couponCode = strtoupper(trim($request->coupon_code));
-            $coupon = Coupon::where('code', $couponCode)->first();
+            $submittedCode = strtoupper(trim($request->coupon_code));
+            
+            // Get all coupons and find the matching one to avoid DB collation/space issues
+            $coupon = Coupon::all()->first(function($c) use ($submittedCode) {
+                return strtoupper(trim($c->code)) === $submittedCode;
+            });
             
             if ($coupon && $coupon->isValid()) {
                 if ($coupon->type === 'percentage') {

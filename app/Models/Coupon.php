@@ -11,10 +11,22 @@ class Coupon extends Model
 
     protected $fillable = ['code', 'discount_amount', 'type', 'is_active', 'expires_at'];
 
+    protected $casts = [
+        'expires_at' => 'datetime',
+        'is_active' => 'boolean',
+    ];
+
     public function isValid()
     {
         if (!$this->is_active) return false;
-        if ($this->expires_at && $this->expires_at < now()) return false;
+        
+        if ($this->expires_at) {
+            // Allow the coupon to be valid until the VERY END of the selected expiry date
+            if ($this->expires_at->endOfDay() < now()) {
+                return false;
+            }
+        }
+        
         return true;
     }
 }
