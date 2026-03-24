@@ -38,16 +38,21 @@ class PaymentController extends Controller
                 return strtoupper(trim($c->code)) === $submittedCode;
             });
             
-            if ($coupon && $coupon->isValid()) {
-                if ($coupon->type === 'percentage') {
-                    $discount = ($coupon->discount_amount / 100) * $totalAmount;
-                    $totalAmount -= $discount;
+            if ($coupon) {
+                if ($coupon->isValid()) {
+                    if ($coupon->type === 'percentage') {
+                        $discount = ($coupon->discount_amount / 100) * $totalAmount;
+                        $totalAmount -= $discount;
+                    } else {
+                        $totalAmount -= $coupon->discount_amount;
+                    }
+                    if ($totalAmount < 0) $totalAmount = 0;
                 } else {
-                    $totalAmount -= $coupon->discount_amount;
+                    $reason = !$coupon->is_active ? 'inactive' : 'expired on ' . ($coupon->expires_at ? $coupon->expires_at->format('M d, Y') : 'unknown date');
+                    return back()->with('error', 'Coupon exists but is ' . $reason . '.');
                 }
-                if ($totalAmount < 0) $totalAmount = 0;
             } else {
-                return back()->with('error', 'Invalid or expired coupon code.');
+                return back()->with('error', 'The coupon code "' . $submittedCode . '" does not exist. Please check your spelling.');
             }
         }
 
