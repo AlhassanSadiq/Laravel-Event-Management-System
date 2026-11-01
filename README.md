@@ -30,8 +30,8 @@ A professional, scalable event ticketing and landing page system built with Lara
 
 1. **Clone the repository:**
    ```bash
-   git clone <your-repo-url>
-   cd event
+   git clone https://github.com/AlhassanSadiq/Laravel-Event-Management-System.git
+   cd Laravel-Event-Management-System
    ```
 
 2. **Install dependencies:**
